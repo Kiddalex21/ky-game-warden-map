@@ -18,9 +18,16 @@
     }
     #map-container {
       width: 100%;
-      height: auto;
+      height: 100vh;
       overflow: auto;
       background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    svg {
+      width: 90%;
+      height: auto;
     }
     svg path {
       cursor: pointer;
@@ -61,9 +68,16 @@
     fetch('usa-ky.svg')
       .then(response => response.text())
       .then(svgText => {
-        document.getElementById('map-container').innerHTML = svgText;
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+        const svg = svgDoc.querySelector('svg');
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.setAttribute('viewBox', svg.getAttribute('viewBox') || '0 0 1000 600');
+        document.getElementById('map-container').appendChild(svg);
 
-        const paths = document.querySelectorAll('svg path');
+        const paths = svg.querySelectorAll('path');
         const tooltip = document.getElementById('tooltip');
 
         paths.forEach(path => {
